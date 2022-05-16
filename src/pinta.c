@@ -16,6 +16,9 @@ char errstr[PINTA_MAX_ERRSTR_LENGTH];
 // Function to swap the buffers, depends on the type of frontend
 static int (*pinta_swap) (void);
 
+// Function to free frontend resources
+static void (*pinta_destroy) (void);
+
 #ifdef USE_DRM
 
 static int
@@ -44,6 +47,11 @@ pinta_swap_drm()
     return 0;
 }
 
+static void
+pinta_destroy_drm()
+{
+}
+
 #endif
 
 #ifdef USE_X
@@ -53,6 +61,12 @@ pinta_swap_x()
 {
     pinta_egl_swap();
     return 0;
+}
+
+static void
+pinta_destroy_x()
+{
+    pinta_x_destroy();
 }
 
 #endif
@@ -75,6 +89,7 @@ pinta_init_drm(int w, int h, const char *mode, unsigned int vrefresh,
     }
     gbm.bo = gbm.next_bo;
     pinta_swap = pinta_swap_drm;
+    pinta_destroy = pinta_destroy_drm;
     return 0;
 
 #else
@@ -99,6 +114,7 @@ pinta_init_x(int w, int h)
         return -1;
     }
     pinta_swap = pinta_swap_x;
+    pinta_destroy = pinta_destroy_x;
     return 0;
 
 #else
@@ -145,5 +161,12 @@ pinta_init_ext(enum pinta_frontend frontend, int w, int h, const char *mode,
             sprintf(errstr, "unknown frontend");
             return -1;
     }
+}
+
+int
+pinta_quit()
+{
+    pinta_egl_destroy();
+    pinta_destroy();
 }
 

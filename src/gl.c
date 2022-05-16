@@ -227,8 +227,9 @@ pinta_gl_draw(struct pinta_model *model)
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw the model's elements
+    struct pinta_list_node *node;
     struct pinta_mesh *current;
-    for (current = model->first; current; current = current->next) {
+    pinta_list_foreach(current, node, model->meshes) {
         // Set the transformation matrix
         pinta_gl_translate(modelview, current->x, current->y, 0.0f);
         pinta_gl_matrix_multiply(
@@ -246,7 +247,7 @@ pinta_gl_draw(struct pinta_model *model)
         glDrawElements(
             current->primitive, current->nindices, GL_UNSIGNED_SHORT,
             (const void *)(sizeof(unsigned short) * current->ioffset));
-    }    
+    }
 }
 
 int

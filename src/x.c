@@ -5,6 +5,13 @@
 
 struct pinta_x xinfo;
 
+void
+pinta_x_destroy()
+{
+    XDestroyWindow(xinfo.xdisplay, xinfo.win);
+    XCloseDisplay(xinfo.xdisplay);
+}
+
 int
 pinta_x_init(int w, int h)
 {

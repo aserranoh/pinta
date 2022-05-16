@@ -133,6 +133,13 @@ egl_choose_config(EGLDisplay egl_display, const EGLint *attribs,
     return true;
 }
 
+void
+pinta_egl_destroy()
+{
+    eglMakeCurrent(egl.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglTerminate(egl.display);
+}
+
 int
 pinta_egl_init(enum pinta_egl_frontend frontend, EGLNativeDisplayType device,
     uint32_t format, EGLNativeWindowType surface, int samples)

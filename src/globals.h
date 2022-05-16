@@ -132,12 +132,18 @@ pinta_gbm_release_buffer();
 
 /// X ///
 
+void
+pinta_x_destroy();
+
 int
 pinta_x_init(int w, int h);
 
 #endif
 
 /// EGL ///
+
+void
+pinta_egl_destroy();
 
 int
 pinta_egl_init(enum pinta_egl_frontend frontend, EGLNativeDisplayType device,

@@ -1,6 +1,6 @@
 
 lib_LTLIBRARIES = libpinta.la
-libpinta_la_SOURCES = clock.c cutil.h egl.c gl.c globals.h model.c pinta.c
+libpinta_la_SOURCES = clock.c cutil.h egl.c gl.c globals.h model.c pinta.c list.c
 libpinta_la_CFLAGS = $(glesv2_CFLAGS) $(egl_CFLAGS)
 libpinta_la_LIBADD = $(glesv2_LIBS) $(egl_LIBS)
 if USE_DRM

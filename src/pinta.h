@@ -3,6 +3,7 @@
 #define PINTA_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <GLES2/gl2.h>
 
@@ -28,11 +29,16 @@ struct pinta_clock {
     uint64_t interval;
 };
 
+/* pinta_point
+   A 2D point
+ */
+typedef float pinta_point[2];
+
 /* pinta_vertex
    Represents a vertex of a mesh.
  */
 struct pinta_vertex {
-    float pos[2];
+    pinta_point pos;
     unsigned char color[4];
 };
 
@@ -43,12 +49,29 @@ struct pinta_mesh {
     float x;
     float y;
     int voffset;
-    int nvertices;
+    size_t nvertices;
     int ioffset;
-    int nindices;
+    size_t nindices;
     GLenum primitive;
     struct pinta_mesh *prev;
     struct pinta_mesh *next;
+};
+
+/* pinta_list_node
+   A node in a list.
+ */
+struct pinta_list_node {
+    struct pinta_list_node *prev;
+    struct pinta_list_node *next;
+    void *data;
+};
+
+/* pinta_list
+   A list of things
+ */
+struct pinta_list {
+    struct pinta_list_node *first;
+    struct pinta_list_node *last;
 };
 
 /* pinta_model
@@ -60,15 +83,14 @@ struct pinta_model {
     int color_changed;
 
     // Meshes in the model, in a linked list
-    struct pinta_mesh *first;
-    struct pinta_mesh *last;
+    struct pinta_list meshes;
 
     // Model vertices and indices
-    int nvertices;
-    int vcapacity;
+    size_t nvertices;
+    size_t vcapacity;
     struct pinta_vertex *vertices;
-    int nindices;
-    int icapacity;
+    size_t nindices;
+    size_t icapacity;
     unsigned short *indices;
 
     // OpenGL buffers (attribute buffer and index buffer)
@@ -76,6 +98,14 @@ struct pinta_model {
 
     // Bit to mark if the model has to be rebuild
     int dirty;
+};
+
+/* pinta_shape
+   A shape (polygon/polyline)
+ */
+struct pinta_shape {
+    pinta_point *points;
+    size_t npoints;
 };
 
 ////////////////////////////////   FUNCTIONS   ////////////////////////////////
@@ -144,6 +174,52 @@ int
 pinta_init_ext(enum pinta_frontend frontend, int w, int h, const char *mode,
     unsigned int vrefresh, uint32_t format, uint64_t modifier);
 
+/* pinta_list_add
+   Add an element to the given list
+   - list: the list to add the element to
+   - element: the element to add
+ */
+void
+pinta_list_add(struct pinta_list *list, void *element);
+
+/* pinta_list_destroy
+   Destroy the given list
+   - list: the list to destroy
+ */
+void
+pinta_list_destroy(struct pinta_list *list);
+
+/* pinta_list_foreach
+   Macro to iterate over a pinta_list
+ */
+#define pinta_list_foreach(variable, node, list) \
+    for ((node) = (list).first, (variable) = (node) ? (node)->data : 0; \
+         node; \
+         (node) = (node)->next, (variable) = (node) ? (node)->data : 0)
+
+/* pinta_list_init
+   Initialize the given list
+   - list: the list to initialize
+ */
+void
+pinta_list_init(struct pinta_list *list);
+
+/* pinta_mesh_from_shapes
+   Create a mesh from a outer shape and a list of shapes as holes
+   - shape: the outer shape
+   - holes: the list of holes
+ */
+struct pinta_mesh *
+pinta_mesh_from_shapes(struct pinta_model *model, struct pinta_shape *shape,
+    struct pinta_list *holes);
+
+/* pinta_model_destroy
+   Destroy the given model
+   - model: the model to destroy.
+ */
+void
+pinta_model_destroy(struct pinta_model *model);
+
 /* pinta_model_init
    Initialize the given model
    - model: the model to initialize.
@@ -180,6 +256,27 @@ pinta_quit();
 struct pinta_mesh *
 pinta_rectangle(struct pinta_model *model, float x, float y, float w, float h,
     float radius, unsigned char color[4], int segments);
+
+/* pinta_shape_destroy
+   Destroy the given shape
+   - shape: the shape to destroy
+ */
+void
+pinta_shape_destroy(struct pinta_shape *shape);
+
+/* pinta_shape_rectangle
+   Create a rectangular shape.
+   - x: rectangle's x position.
+   - y: rectangle's y position.
+   - w: rectangle's width.
+   - h: rectangle's height.
+   - radius: corner radius.
+   - segments: number of segments to use for the corners when using corner
+               radius.
+ */
+struct pinta_shape *
+pinta_shape_rectangle(float x, float y, float w, float h, float radius,
+    int segments);
 
 #endif
 

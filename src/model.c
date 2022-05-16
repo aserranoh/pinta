@@ -26,14 +26,7 @@ pinta_mesh_new(struct pinta_model *model, float x, float y, int nvertices,
     mesh->prev = mesh->next = NULL;
 
     // Put the new mesh on the linked list
-    if (!model->first) {
-        // Case where the list is empty
-        model->first = model->last = mesh;
-    } else {
-        model->last->next = mesh;
-        mesh->prev = model->last;
-        model->last = mesh;
-    }
+    pinta_list_add(&model->meshes, mesh);
 
     mesh->x = x;
     mesh->y = y;
@@ -130,6 +123,22 @@ pinta_circle(struct pinta_model *model, float x, float y, float radius,
 }
 
 void
+pinta_model_destroy(struct pinta_model *model)
+{
+    // Destroy the model's vertices and indices
+    free(model->vertices);
+    free(model->indices);
+
+    // Destroy meshes
+    struct pinta_list_node *node;
+    struct pinta_mesh *current;
+    pinta_list_foreach(current, node, model->meshes) {
+        free(current);
+    }
+    pinta_list_destroy(&model->meshes);
+}
+
+void
 pinta_model_init(struct pinta_model *model)
 {
     // Default color
@@ -139,7 +148,7 @@ pinta_model_init(struct pinta_model *model)
     model->color_changed = 1;
 
     // Initialize list of meshes
-    model->first = model->last = NULL;
+    pinta_list_init(&model->meshes);
 
     // Initialize arrays of vertices and indices
     model->nvertices = model->vcapacity = 0;
@@ -161,6 +170,7 @@ pinta_model_set_color(struct pinta_model *model, float bcolor[3])
     model->color_changed = 1;
 }
 
+// TODO: case of malicious w and h (negative)
 struct pinta_mesh *
 pinta_rectangle(struct pinta_model *model, float x, float y, float w, float h,
     float radius, unsigned char color[4], int segments)
@@ -304,5 +314,38 @@ pinta_rectangle(struct pinta_model *model, float x, float y, float w, float h,
     }
 
     return mesh;
+}
+
+// TODO: case of malicious w or h (negative)
+struct pinta_shape *
+pinta_shape_rectangle(float x, float y, float w, float h, float radius,
+    int segments)
+{
+    int h_collapsed = 0, w_collapsed = 0;
+    int nvertices, nindices;
+
+    // Compute the number of vertices to use
+    radius = fminf(fminf(w, h)/2.0, radius);
+    if (fabsf(radius - w/2.0) < EPSILON) {
+        w_collapsed = 1;
+    }
+    if (fabsf(radius - h/2.0) < EPSILON) {
+        h_collapsed = 1;
+    }
+    if (radius <= 0) {
+        nvertices = 4;
+    } else {
+        if (w_collapsed && h_collapsed) {
+            return pinta_shape_circle(x, y, radius, segments);
+        }
+        if (w_collapsed || h_collapsed) {
+            nvertices = (segments/2 + 1) * 2 + 2;
+        } else {
+            nvertices = (segments/4 + 1) * 4 + 4;
+        }
+    }
+
+    // Allocate a new mesh on the model
+    struct pinta_shape* shape = pinta_shape_new(x, y, nvertices);
 }
 
