@@ -1,17 +1,6 @@
 
 lib_LTLIBRARIES = libpinta.la
-libpinta_la_SOURCES = clock.c cutil.h egl.c gl.c globals.h model.c pinta.c list.c
-libpinta_la_CFLAGS = $(glesv2_CFLAGS) $(egl_CFLAGS)
-libpinta_la_LIBADD = $(glesv2_LIBS) $(egl_LIBS)
-if USE_DRM
-libpinta_la_SOURCES += drm.c gbm.c
-libpinta_la_CFLAGS += -DUSE_DRM $(libdrm_CFLAGS) $(gbm_CFLAGS)
-libpinta_la_LIBADD += $(libdrm_LIBS) $(gbm_LIBS)
-endif
-if USE_X
-libpinta_la_SOURCES += x.c
-libpinta_la_CFLAGS += -DUSE_X $(x11_CFLAGS)
-libpinta_la_LIBADD += $(x11_LIBS)
-endif
+libpinta_la_SOURCES = clock.cpp clock.h color.cpp color.h display.cpp display.h displayerror.cpp displayerror.h floatcolor.cpp floatcolor.h matrix.cpp matrix.h mesh.cpp mesh.h meshfactory.cpp meshfactory.h renderedmesh.cpp renderedmesh.h renderer.cpp renderer.h renderererror.cpp renderererror.h scene.cpp scene.h transformations.cpp transformations.h vertex.cpp vertex.h
+libpinta_la_CXXFLAGS = $(sdl2_CXXLAGS) $(glesv2_CXXLAGS)
+libpinta_la_LIBADD = $(sdl2_LIBS) $(glesv2_LIBS)
 
-include_HEADERS = pinta.h
