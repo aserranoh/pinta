@@ -5,8 +5,6 @@
 #include <cassert>
 #include <math.h>
 
-#include <iostream>
-
 namespace pinta {
 
 static const float EPSILON = 1.0;

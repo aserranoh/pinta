@@ -15,4 +15,10 @@ void Mesh::setColor(const Color &color)
     }
 }
 
+void Mesh::setPosition(float x, float y)
+{
+    this->x = x;
+    this->y = y;
+}
+
 }

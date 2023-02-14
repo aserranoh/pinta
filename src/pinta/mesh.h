@@ -22,6 +22,7 @@ public:
     inline const std::vector<Vertex> & getVertices() const {return vertices;}
     void setColor(const Color &color);
     inline void setIndices(const std::vector<GLushort> &indices) {this->indices = indices;}
+    void setPosition(float x, float y);
     inline void setPrimitive(GLenum primitive) {this->primitive = primitive;}
     inline void setVertices(const std::vector<Vertex> &vertices) {this->vertices = vertices;}
 
