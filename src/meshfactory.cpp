@@ -26,17 +26,11 @@ Mesh * rectangle(float x, float y, float w, float h, float cornerRadius, const C
         return createPlainRectangle(x, y, w, h, color);
     } else {
         assert(segments > 0);
-        bool widthCollapsed;
-        bool heightCollapsed;
         cornerRadius = std::min(std::min(w, h)/2.0f, cornerRadius);
-        if (std::abs(cornerRadius - w/2.0) < EPSILON) {
-            widthCollapsed = true;
-        }
-        if (std::abs(cornerRadius - h/2.0) < EPSILON) {
-            heightCollapsed = true;
-        }
+        bool widthCollapsed = std::abs(cornerRadius - w/2.0) < EPSILON;
+        bool heightCollapsed = std::abs(cornerRadius - h/2.0) < EPSILON;
         if (widthCollapsed && heightCollapsed) {
-            return circle(x, y, cornerRadius, color, segments);
+            return circle(x, y, cornerRadius, color, segments * 4);
         } else {
             return createRoundRectangle(x, y, w, h, cornerRadius, color, segments, widthCollapsed, heightCollapsed);
         }
@@ -66,14 +60,14 @@ Mesh * circle(float x, float y, float radius, const Color &color, int segments)
     return mesh;
 }
 
-void arc(float x, float y, float cornerRadius, float startingAngle, float angle, int segments, std::vector<Vertex> &vertices, std::vector<GLushort> &indices)
+void arc(float x, float y, float radius, float startAngle, float angle, int segments, std::vector<Vertex> &vertices, std::vector<GLushort> &indices)
 {
     int firstIndex = vertices.size();
     vertices.push_back(Vertex(x, y));
-    vertices.push_back(Vertex(x + cos(startingAngle) * cornerRadius, y + sin(startingAngle) * cornerRadius));
+    vertices.push_back(Vertex(x + cos(startAngle) * radius, y + sin(startAngle) * radius));
     for (int i = 0; i < segments; i++) {
-        float currentAngle = startingAngle + angle * ((i + 1.0)/segments);
-        vertices.push_back(Vertex(x + cos(currentAngle) * cornerRadius, y + sin(currentAngle) * cornerRadius));
+        float currentAngle = startAngle + angle * ((i + 1.0)/segments);
+        vertices.push_back(Vertex(x + cos(currentAngle) * radius, y + sin(currentAngle) * radius));
         indices.push_back(firstIndex);
         indices.push_back(firstIndex + i + 1);
         indices.push_back(firstIndex + i + 2);
@@ -101,13 +95,13 @@ Mesh * createRoundRectangle(float x, float y, float w, float h, float cornerRadi
         if (widthCollapsed) {
             angle0 = 0;
             angle1 = M_PI;
-        } else if (heightCollapsed) {
+        } else {
             angle0 = 3 * M_PI / 2.0;
             angle1 = M_PI / 2.0;
         }
-        arc(0.0, h/2.0 - cornerRadius, cornerRadius, angle0, M_PI, segments, vertices, indices);
+        arc(w/2.0 - cornerRadius, h/2.0 - cornerRadius, cornerRadius, angle0, M_PI, segments * 2, vertices, indices);
         int middleIndex = vertices.size();
-        arc(0.0, -h/2.0 + cornerRadius, cornerRadius, angle1, M_PI, segments, vertices, indices);
+        arc(-w/2.0 + cornerRadius, -h/2.0 + cornerRadius, cornerRadius, angle1, M_PI, segments * 2, vertices, indices);
         indices.push_back(1);
         indices.push_back(0);
         indices.push_back(middleIndex);
