@@ -1,5 +1,5 @@
 
-#include "floatcolor.h"
+#include "pinta/floatcolor.h"
 
 namespace pinta {
 

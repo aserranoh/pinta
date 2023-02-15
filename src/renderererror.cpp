@@ -1,4 +1,4 @@
-#include "renderererror.h"
+#include "pinta/renderererror.h"
 
 namespace pinta {
 

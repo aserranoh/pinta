@@ -1,5 +1,5 @@
 
-#include "vertex.h"
+#include "pinta/vertex.h"
 
 namespace pinta {
 

@@ -1,5 +1,5 @@
 
-#include "scene.h"
+#include "pinta/scene.h"
 
 namespace pinta {
 

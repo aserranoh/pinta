@@ -5,10 +5,11 @@
 #include <list>
 #include <unordered_map>
 
-#include "floatcolor.h"
-#include "matrix.h"
-#include "mesh.h"
-#include "renderedmesh.h"
+#include "pinta/floatcolor.h"
+#include "pinta/matrix.h"
+#include "pinta/mesh.h"
+#include "pinta/renderedmesh.h"
+#include "pinta/vector2.h"
 
 namespace pinta {
 
@@ -21,9 +22,11 @@ public:
 
     void clear();
     void disableStencilTest();
-    void draw(const std::list<Mesh *> &meshes);
+    void draw(const std::list<const Mesh *> &meshes);
     void enableStencilTest(bool enable);
+    void resetTransformations();
     void setBackgroundColor(const FloatColor &color);
+    void translate(const Vector2 &position);
     void updateColor(bool update);
     void updateStencil(bool update);
 
@@ -38,12 +41,13 @@ private:
     void destroyBuffers();
     GLuint loadShader(GLenum shaderType, const char *shaderSource);
     void linkProgram();
-    void rebuildVertexBuffers(const std::list<Mesh *> &meshes);
+    void rebuildVertexBuffers(const std::list<const Mesh *> &meshes);
 
     GLuint shaderProgram;
     GLint modelviewUniform;
     Matrix projectionMatrix;
-    std::unordered_map<Mesh *, RenderedMesh> renderedMeshes;
+    Matrix transformationMatrix;
+    std::unordered_map<const Mesh *, RenderedMesh> renderedMeshes;
     GLuint vertexBuffer;
     GLuint indexBuffer;
     bool updateStencilEnabled;

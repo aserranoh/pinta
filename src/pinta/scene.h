@@ -3,7 +3,7 @@
 
 #include <list>
 
-#include "mesh.h"
+#include "pinta/mesh.h"
 
 namespace pinta {
 

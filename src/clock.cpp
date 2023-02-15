@@ -1,5 +1,5 @@
 
-#include "clock.h"
+#include "pinta/clock.h"
 
 namespace pinta {
 

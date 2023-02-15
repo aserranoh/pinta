@@ -1,5 +1,5 @@
 
-#include "color.h"
+#include "pinta/color.h"
 
 namespace pinta {
 

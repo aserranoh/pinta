@@ -1,5 +1,5 @@
 
-#include "matrix.h"
+#include "pinta/matrix.h"
 #include <cstring>
 
 namespace pinta {

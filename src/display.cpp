@@ -1,6 +1,6 @@
 
-#include "display.h"
-#include "displayerror.h"
+#include "pinta/display.h"
+#include "pinta/displayerror.h"
 
 namespace pinta {
 

@@ -1,7 +1,7 @@
 #ifndef PINTA_VERTEX_H
 #define PINTA_VERTEX_H
 
-#include "color.h"
+#include "pinta/color.h"
 
 namespace pinta {
 

@@ -3,8 +3,8 @@
 
 #include <GLES2/gl2.h>
 
-#include "mesh.h"
-#include "vertex.h"
+#include "pinta/mesh.h"
+#include "pinta/vertex.h"
 
 namespace pinta {
 
@@ -13,7 +13,7 @@ class RenderedMesh {
 public:
 
     RenderedMesh();
-    RenderedMesh(Mesh *mesh, int vertexOffset, int indexOffset);
+    RenderedMesh(const Mesh *mesh, int vertexOffset, int indexOffset);
     RenderedMesh(const RenderedMesh &other);
     ~RenderedMesh();
 
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    Mesh *mesh;
+    const Mesh *mesh;
     int indexOffset;
     int vertexOffset;
 

@@ -1,7 +1,7 @@
-#include "renderer.h"
-#include "renderererror.h"
-#include "renderedmesh.h"
-#include "transformations.h"
+#include "pinta/renderer.h"
+#include "pinta/renderererror.h"
+#include "pinta/renderedmesh.h"
+#include "pinta/transformations.h"
 
 namespace pinta {
 
@@ -40,7 +40,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight):
     glClearStencil(0);
     glStencilFunc(GL_EQUAL, 1, 1);
     modelviewUniform = glGetUniformLocation(shaderProgram, "u_modelview");
-    projectionMatrix = ortho(-viewportWidth/2.0, viewportWidth/2.0, -viewportHeight/2.0, viewportHeight/2.0, -1.0, 1.0);
+    projectionMatrix = orthoMatrix(-viewportWidth/2.0, viewportWidth/2.0, -viewportHeight/2.0, viewportHeight/2.0, -1.0, 1.0);
 }
 
 Renderer::~Renderer()
@@ -58,20 +58,16 @@ void Renderer::disableStencilTest()
     glDisable(GL_STENCIL_TEST);
 }
 
-void Renderer::draw(const std::list<Mesh *> &meshes)
+void Renderer::draw(const std::list<const Mesh *> &meshes)
 {
-    for (Mesh *mesh: meshes) {
+    for (const Mesh *mesh: meshes) {
         if (renderedMeshes.count(mesh) == 0) {
             rebuildVertexBuffers(meshes);
             break;
         }
     }
 
-    for (Mesh *mesh: meshes) {
-        Matrix modelviewMatrix = translate(mesh->getPositionX(), mesh->getPositionY(), 0.0);
-        Matrix modelviewProjectionMatrix = modelviewMatrix * projectionMatrix;
-        glUniformMatrix4fv(modelviewUniform, 1, GL_FALSE, modelviewProjectionMatrix.data());
-
+    for (const Mesh *mesh: meshes) {
         const RenderedMesh &renderedMesh = renderedMeshes[mesh];
         glVertexAttribPointer(POS_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, renderedMesh.getStride(), renderedMesh.getPositionOffset());
         glVertexAttribPointer(COLOR_ATTRIBUTE, 4, GL_UNSIGNED_BYTE, GL_TRUE, renderedMesh.getStride(), renderedMesh.getColorOffset());
@@ -93,9 +89,20 @@ void Renderer::enableStencilTest(bool enable)
 	stencilTestEnabled = enable;
 }
 
+void Renderer::resetTransformations()
+{
+    transformationMatrix = projectionMatrix;
+}
+
 void Renderer::setBackgroundColor(const FloatColor &color)
 {
     glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+}
+
+void Renderer::translate(const Vector2 &position)
+{
+    transformationMatrix = translationMatrix(position) * transformationMatrix;
+    glUniformMatrix4fv(modelviewUniform, 1, GL_FALSE, transformationMatrix.data());
 }
 
 void Renderer::updateColor(bool update)
@@ -194,7 +201,7 @@ void Renderer::linkProgram()
     }
 }
 
-void Renderer::rebuildVertexBuffers(const std::list<Mesh *> &meshes)
+void Renderer::rebuildVertexBuffers(const std::list<const Mesh *> &meshes)
 {
     std::vector<Vertex> vertices;
     std::vector<GLushort> indices;
@@ -202,7 +209,7 @@ void Renderer::rebuildVertexBuffers(const std::list<Mesh *> &meshes)
     renderedMeshes.clear();
     int vertexOffset = 0;
     int indexOffset = 0;
-    for (Mesh *mesh: meshes) {
+    for (const Mesh *mesh: meshes) {
         vertices.insert(vertices.end(), mesh->getVertices().begin(), mesh->getVertices().end());
         indices.insert(indices.end(), mesh->getIndices().begin(), mesh->getIndices().end());
         renderedMeshes[mesh] = RenderedMesh(mesh, vertexOffset, indexOffset);

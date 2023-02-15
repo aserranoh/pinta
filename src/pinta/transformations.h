@@ -1,12 +1,13 @@
 #ifndef PINTA_TRANSFORMATIONS_H
 #define PINTA_TRANSFORMATIONS_H
 
-#include "matrix.h"
+#include "pinta/matrix.h"
+#include "pinta/vector2.h"
 
 namespace pinta {
 
-Matrix ortho(float left, float right, float bottom, float top, float near, float far);
-Matrix translate(float x, float y, float z);
+Matrix orthoMatrix(float left, float right, float bottom, float top, float near, float far);
+Matrix translationMatrix(const Vector2 &vector);
 
 }
 

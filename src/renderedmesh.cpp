@@ -1,4 +1,4 @@
-#include "renderedmesh.h"
+#include "pinta/renderedmesh.h"
 
 namespace pinta {
 
@@ -8,7 +8,7 @@ RenderedMesh::RenderedMesh():
 
 }
 
-RenderedMesh::RenderedMesh(Mesh *mesh, int vertexOffset, int indexOffset):
+RenderedMesh::RenderedMesh(const Mesh *mesh, int vertexOffset, int indexOffset):
     mesh(mesh), vertexOffset(vertexOffset), indexOffset(indexOffset)
 {
 

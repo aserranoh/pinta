@@ -1,4 +1,4 @@
-#include "displayerror.h"
+#include "pinta/displayerror.h"
 
 namespace pinta {
 

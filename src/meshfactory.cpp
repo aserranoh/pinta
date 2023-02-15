@@ -1,5 +1,5 @@
 
-#include "meshfactory.h"
+#include "pinta/meshfactory.h"
 
 #include <algorithm>
 #include <cassert>
@@ -12,32 +12,32 @@ static const float EPSILON = 1.0;
 static void arc(float x, float y, float cornerRadius, float startingAngle, float angle, int segments,
     std::vector<Vertex> &vertices, std::vector<GLushort> &indices);
 
-static Mesh * createPlainRectangle(float x, float y, float w, float h, const Color &color);
-static Mesh * createRoundRectangle(float x, float y, float w, float h, float cornerRadius, const Color &color,
+static Mesh * createPlainRectangle(float w, float h, const Color &color);
+static Mesh * createRoundRectangle(float w, float h, float cornerRadius, const Color &color,
     int segments, bool widthCollapsed, bool heightCollapsed);
 
-Mesh * rectangle(float x, float y, float w, float h, float cornerRadius, const Color &color, int segments)
+Mesh * rectangle(float w, float h, float cornerRadius, const Color &color, int segments)
 {
     assert(w > 0 && h > 0);
 
     if (cornerRadius <= 0) {
-        return createPlainRectangle(x, y, w, h, color);
+        return createPlainRectangle(w, h, color);
     } else {
         assert(segments > 0);
         cornerRadius = std::min(std::min(w, h)/2.0f, cornerRadius);
         bool widthCollapsed = std::abs(cornerRadius - w/2.0) < EPSILON;
         bool heightCollapsed = std::abs(cornerRadius - h/2.0) < EPSILON;
         if (widthCollapsed && heightCollapsed) {
-            return circle(x, y, cornerRadius, color, segments * 4);
+            return circle(cornerRadius, color, segments * 4);
         } else {
-            return createRoundRectangle(x, y, w, h, cornerRadius, color, segments, widthCollapsed, heightCollapsed);
+            return createRoundRectangle(w, h, cornerRadius, color, segments, widthCollapsed, heightCollapsed);
         }
     }
 }
 
-Mesh * circle(float x, float y, float radius, const Color &color, int segments)
+Mesh * circle(float radius, const Color &color, int segments)
 {
-    Mesh *mesh = new Mesh(x, y, GL_TRIANGLE_FAN);
+    Mesh *mesh = new Mesh(GL_TRIANGLE_FAN);
     std::vector<Vertex> vertices;
     std::vector<GLushort> indices;
 
@@ -72,18 +72,18 @@ void arc(float x, float y, float radius, float startAngle, float angle, int segm
     }
 }
 
-Mesh * createPlainRectangle(float x, float y, float w, float h, const Color &color)
+Mesh * createPlainRectangle(float w, float h, const Color &color)
 {
-    Mesh *mesh = new Mesh(x, y, GL_TRIANGLE_STRIP);
+    Mesh *mesh = new Mesh(GL_TRIANGLE_STRIP);
     mesh->setVertices({Vertex(-w/2.0, -h/2.0), Vertex(-w/2.0, h/2.0), Vertex(w/2.0, -h/2.0), Vertex(w/2.0, h/2.0)});
     mesh->setIndices({0, 1, 2, 3});
     mesh->setColor(color);
     return mesh;
 }
 
-Mesh * createRoundRectangle(float x, float y, float w, float h, float cornerRadius, const Color &color, int segments, bool widthCollapsed, bool heightCollapsed)
+Mesh * createRoundRectangle(float w, float h, float cornerRadius, const Color &color, int segments, bool widthCollapsed, bool heightCollapsed)
 {
-    Mesh *mesh = new Mesh(x, y, GL_TRIANGLES);
+    Mesh *mesh = new Mesh(GL_TRIANGLES);
     std::vector<Vertex> vertices;
     std::vector<GLushort> indices;
 

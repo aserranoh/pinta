@@ -1,9 +1,9 @@
 
-#include "transformations.h"
+#include "pinta/transformations.h"
 
 namespace pinta {
 
-Matrix ortho(float left, float right, float bottom, float top, float near, float far)
+Matrix orthoMatrix(float left, float right, float bottom, float top, float near, float far)
 {
     float deltaX = right - left;
     float deltaY = top - bottom;
@@ -20,12 +20,12 @@ Matrix ortho(float left, float right, float bottom, float top, float near, float
     return matrix;
 }
 
-Matrix translate(float tx, float ty, float tz)
+Matrix translationMatrix(const Vector2 &position)
 {
     Matrix matrix = Matrix::identity();
-    matrix[3][0] = tx;
-    matrix[3][1] = ty;
-    matrix[3][2] = tz;
+    matrix[3][0] = position.getX();
+    matrix[3][1] = position.getY();
+    matrix[3][2] = 0.0;
     return matrix;
 }
 
