@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "pinta/floatcolor.h"
 #include "pinta/mesh.h"
 #include "pinta/renderedmesh.h"
 
@@ -25,7 +24,7 @@ public:
     void enableStencilTest(bool enable);
     void resetTransformations();
     void scale(const glm::vec2& scaleFactor);
-    void setBackgroundColor(const FloatColor &color);
+    void setBackgroundColor(const glm::vec3 &color);
     void translate(const glm::vec2 &position);
     void updateColor(bool update);
     void updateStencil(bool update);

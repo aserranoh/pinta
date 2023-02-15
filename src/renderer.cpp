@@ -101,9 +101,9 @@ void Renderer::scale(const glm::vec2& scaleFactor)
     glUniformMatrix4fv(modelviewUniform, 1, GL_FALSE, &transformationMatrix[0][0]);
 }
 
-void Renderer::setBackgroundColor(const FloatColor &color)
+void Renderer::setBackgroundColor(const glm::vec3 &color)
 {
-    glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    glClearColor(color.r, color.g, color.b, 1.0);
 }
 
 void Renderer::translate(const glm::vec2& position)
