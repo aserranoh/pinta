@@ -1,7 +1,8 @@
 #include "pinta/renderer.h"
 #include "pinta/renderererror.h"
 #include "pinta/renderedmesh.h"
-#include "pinta/transformations.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace pinta {
 
@@ -40,7 +41,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight):
     glClearStencil(0);
     glStencilFunc(GL_EQUAL, 1, 1);
     modelviewUniform = glGetUniformLocation(shaderProgram, "u_modelview");
-    projectionMatrix = orthoMatrix(-viewportWidth/2.0, viewportWidth/2.0, -viewportHeight/2.0, viewportHeight/2.0, -1.0, 1.0);
+    projectionMatrix = glm::ortho(-viewportWidth/2.0, viewportWidth/2.0, -viewportHeight/2.0, viewportHeight/2.0, -1.0, 1.0);
 }
 
 Renderer::~Renderer()
@@ -94,15 +95,21 @@ void Renderer::resetTransformations()
     transformationMatrix = projectionMatrix;
 }
 
+void Renderer::scale(const glm::vec2& scaleFactor)
+{
+    transformationMatrix = glm::scale(transformationMatrix, glm::vec3(scaleFactor.x, scaleFactor.y, 1.0));
+    glUniformMatrix4fv(modelviewUniform, 1, GL_FALSE, &transformationMatrix[0][0]);
+}
+
 void Renderer::setBackgroundColor(const FloatColor &color)
 {
     glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 }
 
-void Renderer::translate(const Vector2 &position)
+void Renderer::translate(const glm::vec2& position)
 {
-    transformationMatrix = translationMatrix(position) * transformationMatrix;
-    glUniformMatrix4fv(modelviewUniform, 1, GL_FALSE, transformationMatrix.data());
+    transformationMatrix = glm::translate(transformationMatrix, glm::vec3(position.x, position.y, 0.0));
+    glUniformMatrix4fv(modelviewUniform, 1, GL_FALSE, &transformationMatrix[0][0]);
 }
 
 void Renderer::updateColor(bool update)

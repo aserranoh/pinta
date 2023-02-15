@@ -4,12 +4,11 @@
 #include <GLES2/gl2.h>
 #include <list>
 #include <unordered_map>
+#include <glm/glm.hpp>
 
 #include "pinta/floatcolor.h"
-#include "pinta/matrix.h"
 #include "pinta/mesh.h"
 #include "pinta/renderedmesh.h"
-#include "pinta/vector2.h"
 
 namespace pinta {
 
@@ -25,8 +24,9 @@ public:
     void draw(const std::list<const Mesh *> &meshes);
     void enableStencilTest(bool enable);
     void resetTransformations();
+    void scale(const glm::vec2& scaleFactor);
     void setBackgroundColor(const FloatColor &color);
-    void translate(const Vector2 &position);
+    void translate(const glm::vec2 &position);
     void updateColor(bool update);
     void updateStencil(bool update);
 
@@ -45,8 +45,9 @@ private:
 
     GLuint shaderProgram;
     GLint modelviewUniform;
-    Matrix projectionMatrix;
-    Matrix transformationMatrix;
+    
+    glm::mat4 projectionMatrix;
+    glm::mat4 transformationMatrix;
     std::unordered_map<const Mesh *, RenderedMesh> renderedMeshes;
     GLuint vertexBuffer;
     GLuint indexBuffer;

@@ -7,6 +7,7 @@ LT_INIT
 
 PKG_CHECK_MODULES([sdl2], [sdl2])
 PKG_CHECK_MODULES([glesv2], [glesv2])
+PKG_CHECK_MODULES([glm], [glm])
 
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_HEADERS([config.h])
